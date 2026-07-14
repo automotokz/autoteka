@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Автотека - Проверка авто</title>
-    <!-- Подключаем Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,26 +11,10 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: #ffffff; color: #000; height: 100vh; overflow-y: auto; }
-        
-        /* Telegram Safe Area */
         .app-container { padding: 16px; padding-top: env(safe-area-inset-top); }
 
-        /* Верхний баннер */
-        .top-banner {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px solid #f0f0f0;
-        }
-        .banner-left { display: flex; align-items: center; gap: 10px; }
-        .banner-left svg { width: 28px; height: 28px; }
-        .banner-text strong { font-size: 14px; font-weight: 600; }
-        .banner-text span { font-size: 12px; color: #666; }
-        .banner-btn {
-            background: #fff; border: 1px solid #d0d0d0; padding: 6px 14px;
-            border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;
-        }
-
         /* Навигация */
-        .nav-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 16px 0; }
         .nav-left a { color: #4a90e2; font-size: 14px; text-decoration: none; font-weight: 500; }
         .nav-right .login-btn {
             background: #e0f2fe; color: #0284c7; padding: 8px 16px;
@@ -46,8 +29,8 @@
         .logo-sub { font-size: 12px; color: #666; margin-top: -4px; }
 
         /* Герой */
-        .hero { text-align: center; padding: 20px 0; }
-        .hero h1 { font-size: 30px; font-weight: 700; line-height: 1.1; margin-bottom: 10px; }
+        .hero { text-align: center; padding: 16px 0; }
+        .hero h1 { font-size: 32px; font-weight: 700; line-height: 1.1; margin-bottom: 12px; }
         .hero p { font-size: 14px; color: #555; line-height: 1.5; max-width: 320px; margin: 0 auto 20px; }
 
         /* Поле ввода */
@@ -69,18 +52,16 @@
         .search-footer span { color: #fff; font-size: 13px; font-weight: 500; }
         .search-footer .highlight { color: #8b5cf6; font-weight: 600; }
 
-        /* Картинка машины (реалистичная) */
+        /* Картинка машины (качественный вектор) */
         .car-image-section {
-            display: flex; justify-content: center; padding: 20px 0;
+            display: flex; justify-content: center; padding: 24px 0 16px 0;
         }
         .car-image-container {
-            width: 100%; max-width: 380px; height: 200px;
-            background: #f8f9fa; border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden;
+            width: 100%; max-width: 380px; height: 180px;
+            position: relative; display: flex; align-items: center; justify-content: center;
         }
-
-        /* О проекте */
+        
+        /* Блок "О проекте" */
         .about-section {
             background: #f7f7f7; padding: 20px 16px 40px; border-radius: 20px 20px 0 0;
             margin-top: 10px;
@@ -93,7 +74,6 @@
         .big-number { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
         .big-number-desc { font-size: 14px; color: #444; }
 
-        /* Адаптив для ПК */
         @media (min-width: 768px) {
             body { max-width: 480px; margin: 0 auto; border-left: 1px solid #eee; border-right: 1px solid #eee; }
         }
@@ -102,19 +82,10 @@
 <body>
     <div class="app-container">
         
-        <!-- Баннер -->
-        <div class="top-banner">
-            <div class="banner-left">
-                <svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#2e7d32"/><text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">A</text></svg>
-                <div class="banner-text"><strong>Автотека</strong><span>Доступно в Google Play</span></div>
-            </div>
-            <button class="banner-btn" onclick="window.Telegram.WebApp.close()">Скачать</button>
-        </div>
-
-        <!-- Нав -->
+        <!-- Навигация -->
         <div class="nav-header">
             <div class="nav-left"><a href="#">Помощь</a></div>
-            <div class="nav-right"><button class="login-btn" onclick="window.Telegram.WebApp.MainButton.setText('Вход выполнен').show()">Войти</button></div>
+            <div class="nav-right"><button class="login-btn" id="loginBtn">Войти</button></div>
         </div>
 
         <!-- Лого -->
@@ -137,7 +108,7 @@
         <!-- Поиск -->
         <div class="search-box">
             <div class="search-input-row">
-                <input type="text" id="vinInput" placeholder="Введите VIN, госномер, номер кузова">
+                <input type="text" id="vinInput" placeholder="Введите VIN, госномер, номер кузова" maxlength="17">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             </div>
             <div class="search-footer">
@@ -146,34 +117,85 @@
             </div>
         </div>
 
-        <!-- Машина (реалистичный SVG) -->
+        <!-- Качественный автомобиль (SVG) -->
         <div class="car-image-section">
             <div class="car-image-container">
-                <svg width="320" height="160" viewBox="0 0 320 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Тень -->
-                    <ellipse cx="160" cy="145" rx="140" ry="15" fill="#000000" opacity="0.08"/>
-                    <!-- Кузов -->
-                    <path d="M30 110 L40 80 L70 50 L250 50 L280 80 L290 110 Z" fill="#d0d8e0" stroke="#a0a8b0" stroke-width="2"/>
+                <svg width="100%" height="100%" viewBox="0 0 380 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Тень под авто -->
+                    <ellipse cx="190" cy="165" rx="160" ry="12" fill="#000000" opacity="0.08"/>
+                    
+                    <!-- Нижняя часть кузова (пороги) -->
+                    <path d="M50 140 L330 140 L320 150 L60 150 Z" fill="#2a2a2a"/>
+                    
+                    <!-- Основной кузов (вид сбоку) -->
+                    <path d="M40 120 L50 80 L80 55 L300 55 L330 80 L340 120 Z" fill="#d0d8e0" stroke="#a0a8b0" stroke-width="2"/>
+                    
                     <!-- Капот и крыша -->
-                    <path d="M70 50 L80 35 L240 35 L250 50" fill="#c0c8d0" stroke="#a0a8b0" stroke-width="2"/>
-                    <!-- Стекла -->
-                    <path d="M80 35 L100 55 L220 55 L240 35" fill="#82c4e6" stroke="#5a8aaa" stroke-width="1.5"/>
-                    <!-- Фары -->
-                    <ellipse cx="45" cy="85" rx="12" ry="8" fill="#fff5b0" stroke="#d0a020" stroke-width="2"/>
-                    <ellipse cx="275" cy="85" rx="12" ry="8" fill="#fff5b0" stroke="#d0a020" stroke-width="2"/>
-                    <!-- Решетка -->
-                    <rect x="130" y="70" width="60" height="15" rx="4" fill="#222" stroke="#444" stroke-width="1"/>
-                    <!-- Колеса -->
-                    <circle cx="75" cy="110" r="22" fill="#222" stroke="#444" stroke-width="4"/>
-                    <circle cx="75" cy="110" r="12" fill="#ccc" stroke="#999" stroke-width="2"/>
-                    <circle cx="245" cy="110" r="22" fill="#222" stroke="#444" stroke-width="4"/>
-                    <circle cx="245" cy="110" r="12" fill="#ccc" stroke="#999" stroke-width="2"/>
-                    <!-- Блеск -->
-                    <path d="M70 50 L80 35 L120 35 L100 50 Z" fill="#ffffff" opacity="0.15"/>
+                    <path d="M80 55 L95 35 L285 35 L300 55" fill="#c0c8d0" stroke="#a0a8b0" stroke-width="2"/>
+                    
+                    <!-- Лобовое стекло -->
+                    <path d="M95 35 L110 55 L160 55 L160 35 Z" fill="#82c4e6" stroke="#5a8aaa" stroke-width="1.5" opacity="0.9"/>
+                    <!-- Заднее стекло -->
+                    <path d="M220 35 L220 55 L270 55 L285 35 Z" fill="#82c4e6" stroke="#5a8aaa" stroke-width="1.5" opacity="0.9"/>
+                    <!-- Боковые окна -->
+                    <path d="M165 35 L165 55 L215 55 L215 35 Z" fill="#82c4e6" stroke="#5a8aaa" stroke-width="1.5" opacity="0.8"/>
+                    
+                    <!-- Блик на стеклах -->
+                    <path d="M100 40 L115 50 L125 45 L110 35 Z" fill="#ffffff" opacity="0.3"/>
+                    
+                    <!-- Передняя фара -->
+                    <ellipse cx="55" cy="95" rx="16" ry="10" fill="#fff5b0" stroke="#d0a020" stroke-width="2"/>
+                    <ellipse cx="55" cy="95" rx="8" ry="5" fill="#ffffff" opacity="0.6"/>
+                    
+                    <!-- Задняя фара -->
+                    <ellipse cx="325" cy="95" rx="14" ry="9" fill="#ff4444" stroke="#aa0000" stroke-width="2"/>
+                    <ellipse cx="325" cy="95" rx="6" ry="4" fill="#ffaaaa" opacity="0.6"/>
+                    
+                    <!-- Решетка радиатора -->
+                    <rect x="140" y="75" width="100" height="18" rx="6" fill="#1a1a1a" stroke="#444" stroke-width="1.5"/>
+                    <line x1="160" y1="75" x2="160" y2="93" stroke="#333" stroke-width="1"/>
+                    <line x1="180" y1="75" x2="180" y2="93" stroke="#333" stroke-width="1"/>
+                    <line x1="200" y1="75" x2="200" y2="93" stroke="#333" stroke-width="1"/>
+                    <line x1="220" y1="75" x2="220" y2="93" stroke="#333" stroke-width="1"/>
+                    
+                    <!-- Логотип на решетке -->
+                    <circle cx="190" cy="84" r="6" fill="#2e7d32"/>
+                    <text x="190" y="87" text-anchor="middle" fill="white" font-size="8" font-weight="bold">A</text>
+                    
+                    <!-- Переднее колесо -->
+                    <circle cx="90" cy="135" r="28" fill="#1a1a1a" stroke="#333" stroke-width="6"/>
+                    <circle cx="90" cy="135" r="20" fill="#444" stroke="#666" stroke-width="2"/>
+                    <circle cx="90" cy="135" r="10" fill="#888" stroke="#aaa" stroke-width="1.5"/>
+                    <!-- Диски колеса -->
+                    <line x1="90" y1="125" x2="90" y2="145" stroke="#aaa" stroke-width="2"/>
+                    <line x1="80" y1="135" x2="100" y2="135" stroke="#aaa" stroke-width="2"/>
+                    <line x1="83" y1="128" x2="97" y2="142" stroke="#aaa" stroke-width="2"/>
+                    <line x1="83" y1="142" x2="97" y2="128" stroke="#aaa" stroke-width="2"/>
+                    
+                    <!-- Заднее колесо -->
+                    <circle cx="290" cy="135" r="28" fill="#1a1a1a" stroke="#333" stroke-width="6"/>
+                    <circle cx="290" cy="135" r="20" fill="#444" stroke="#666" stroke-width="2"/>
+                    <circle cx="290" cy="135" r="10" fill="#888" stroke="#aaa" stroke-width="1.5"/>
+                    <line x1="290" y1="125" x2="290" y2="145" stroke="#aaa" stroke-width="2"/>
+                    <line x1="280" y1="135" x2="300" y2="135" stroke="#aaa" stroke-width="2"/>
+                    <line x1="283" y1="128" x2="297" y2="142" stroke="#aaa" stroke-width="2"/>
+                    <line x1="283" y1="142" x2="297" y2="128" stroke="#aaa" stroke-width="2"/>
+                    
+                    <!-- Блик на кузове -->
+                    <path d="M80 55 L95 35 L120 35 L105 55 Z" fill="#ffffff" opacity="0.15"/>
+                    <path d="M280 55 L295 40 L310 55 Z" fill="#ffffff" opacity="0.1"/>
+                    
+                    <!-- Зеркала -->
+                    <rect x="70" y="50" width="15" height="10" rx="3" fill="#555" stroke="#333" stroke-width="1.5"/>
+                    <rect x="295" y="50" width="15" height="10" rx="3" fill="#555" stroke="#333" stroke-width="1.5"/>
+
+                    <!-- Ручка двери -->
+                    <rect x="200" y="95" width="20" height="5" rx="2" fill="#999" stroke="#777" stroke-width="1"/>
                 </svg>
-                <!-- Индикатор проверки -->
-                <div style="position:absolute; top:20px; right:20px; background:#4ade80; border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(74,222,128,0.4);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                
+                <!-- Плашка "Проверено" -->
+                <div style="position:absolute; top:10px; right:15px; background:#4ade80; border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(74,222,128,0.5);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
             </div>
         </div>
@@ -192,37 +214,56 @@
     </div>
 
     <script>
-        // Инициализация Telegram Web App
+        // Инициализация Telegram
         const telegram = window.Telegram.WebApp;
-        telegram.expand(); // Растягиваем на весь экран
+        telegram.expand();
         telegram.ready();
 
-        // Логика взаимодействия с пользователем
         const vinInput = document.getElementById('vinInput');
-        
-        vinInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const vin = this.value.trim();
-                if (vin.length === 17) {
-                    // Включаем кнопку "Отправить" в Telegram
-                    telegram.MainButton.setText('Проверить VIN');
-                    telegram.MainButton.show();
-                    telegram.MainButton.onClick(() => {
-                        // Имитация отправки данных в группу (через бэкенд)
-                        console.log(`[TG] VIN: ${vin}`);
-                        alert('VIN принят. Имитация поиска...');
-                        telegram.MainButton.hide();
-                        // Здесь можно сделать fetch запрос к твоему бэкенду
-                        // fetch('https://your-backend.com/api/vin', { method: 'POST', body: JSON.stringify({ vin }) })
-                    });
-                } else {
-                    telegram.showAlert('Введите корректный VIN (17 символов)');
-                }
+        let isButtonShown = false;
+
+        // Логика: при вводе 17 символов появляется кнопка
+        vinInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val.length === 17 && !isButtonShown) {
+                telegram.MainButton.setText('🔍 Проверить автомобиль');
+                telegram.MainButton.color = '#2e7d32';
+                telegram.MainButton.textColor = '#ffffff';
+                telegram.MainButton.show();
+                isButtonShown = true;
+            } else if (val.length !== 17 && isButtonShown) {
+                telegram.MainButton.hide();
+                isButtonShown = false;
             }
         });
 
-        // Если пользователь нажимает "Войти"
-        document.querySelector('.login-btn').addEventListener('click', () => {
+        // Нажатие на главную кнопку
+        telegram.MainButton.onClick(() => {
+            const vin = vinInput.value.trim();
+            if (vin.length === 17) {
+                // Отправка данных (здесь можно вставить fetch к твоему бэкенду)
+                console.log(`[TG] VIN введен: ${vin}`);
+                
+                // Имитация загрузки и показа отчета
+                telegram.MainButton.setText('⏳ Ищем данные...');
+                telegram.MainButton.disable();
+                
+                setTimeout(() => {
+                    telegram.MainButton.hide();
+                    isButtonShown = false;
+                    telegram.showPopup({
+                        title: '✅ Отчет найден',
+                        message: 'Полный отчет по VIN ' + vin + '\n\nМарка: Toyota Camry\nГод: 2021\nПробег: 45 000 км\nДТП: Нет\nЗалог: Нет\n\nДля просмотра деталей зарегистрируйтесь.',
+                        buttons: [{ text: 'Закрыть', type: 'cancel' }]
+                    });
+                    telegram.MainButton.enable();
+                    vinInput.value = '';
+                }, 1500);
+            }
+        });
+
+        // Кнопка "Войти"
+        document.getElementById('loginBtn').addEventListener('click', () => {
             telegram.showPopup({
                 title: 'Вход в Автотеку',
                 message: 'Введите номер телефона для входа',
